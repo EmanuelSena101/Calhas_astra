@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Simulador de Calhas Astra
 
-## Getting Started
+Simulador moderno para calculo de quantidade de pecas do sistema de calhas Astra. Reescrito a partir do sistema legado em ASP Classico para **Next.js 15** com **TypeScript**.
 
-First, run the development server:
+## Stack
+
+- **Next.js 15** (App Router) + TypeScript strict
+- **Tailwind CSS** + **shadcn/ui**
+- **Zod** para validacao de inputs
+- **Vitest** para testes unitarios
+- **Docker** (multi-stage, imagem final `node:20-alpine`)
+
+## Desenvolvimento
 
 ```bash
+# Instalar dependencias
+npm install
+
+# Rodar em modo de desenvolvimento
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Rodar testes
+npm test
+
+# Build de producao
+npm run build
+
+# Iniciar em producao
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Docker
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Build e iniciar com Docker Compose
+docker compose up --build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# A aplicacao estara disponivel em http://localhost:3000
+```
 
-## Learn More
+## Estrutura do Projeto
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/
+│   ├── layout.tsx            # Layout principal
+│   ├── page.tsx              # Formulario de simulacao
+│   ├── resultado/page.tsx    # Resultado do calculo
+│   └── globals.css
+├── components/
+│   ├── formulario-calhas.tsx # Componente do formulario
+│   ├── card-resultado.tsx    # Componente do resultado
+│   └── ui/                   # Componentes shadcn/ui
+├── lib/
+│   ├── calcular-calhas.ts   # Funcao pura de calculo
+│   ├── precipitacao.ts      # Tabela de 98 cidades x precipitacao
+│   ├── pecas.ts             # Catalogo de pecas (codigo, nome, link)
+│   ├── schemas.ts           # Schemas Zod para validacao
+│   └── utils.ts
+└── types/
+    └── index.ts             # Tipos TypeScript
+tests/
+└── calcular-calhas.test.ts  # Testes unitarios
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Tipos de Kit
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Tipo | Barras    | Bocal          |
+|------|-----------|----------------|
+| 1    | apenas 3m | 75mm (retangular) |
+| 2    | 3m + 1m   | 75mm           |
+| 3    | apenas 3m | 100mm (redondo)|
+| 4    | 3m + 1m   | 100mm          |
 
-## Deploy on Vercel
+## Cidades
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+98 cidades agrupadas por UF, com valores de precipitacao pluviometrica para cada tipo de kit. Dados extraidos do sistema original em ASP.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Testes
+
+Os testes cobrem:
+- Um caso para cada tipo de kit (1, 2, 3, 4)
+- Casos de borda do calculo de condutores (5 ramos da logica de `resto`)
+- Emenda nao pode ser negativa
+- Verificacao de precipitacao para 5 cidades x 4 tipos
+- Caso de aceitacao: SP Congonhas, tipo 1
+- Contagem total de 98 cidades
