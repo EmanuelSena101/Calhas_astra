@@ -1,70 +1,64 @@
-import { FormularioCalhas } from '@/components/formulario-calhas';
+import { Calculator, CloudRain, Ruler } from 'lucide-react';
+import { AvisoVideo } from '@/components/aviso-video';
+import { HeroBanner } from '@/components/hero-banner';
+
+const steps = [
+  {
+    icon: Ruler,
+    title: '1. Medidas do telhado',
+    description:
+      'Informe largura, comprimento, altura do telhado e altura da calha ate o chao.',
+  },
+  {
+    icon: CloudRain,
+    title: '2. Sua regiao',
+    description:
+      'Selecione sua cidade para considerar o volume de chuva local no dimensionamento.',
+  },
+  {
+    icon: Calculator,
+    title: '3. Calculo automatico',
+    description:
+      'O simulador retorna o kit completo com pecas, quantidades e link para a loja.',
+  },
+];
 
 export default function HomePage() {
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Simulador de Calhas</h1>
-        <p className="mt-2 text-muted-foreground">
-          Calcule a quantidade de pecas necessarias para o sistema de calhas do seu telhado.
-        </p>
-      </div>
+    <div className="space-y-10 md:space-y-14">
+      <HeroBanner />
 
-      {/* Aviso sobre telhados com mais de uma queda */}
-      <div className="bg-orange-50 border border-orange-200 rounded-lg p-5">
-        <h3 className="text-lg font-bold text-orange-900 mb-2">
-          ATENCAO | TELHADOS COM MAIS DE UMA QUEDA:
-        </h3>
-        <ul className="space-y-2 text-sm text-orange-800">
-          <li>
-            Caso o telhado do seu projeto apresente mais de uma queda, sera necessario
-            realizar o calculo com a simulacao abaixo para cada queda.{' '}
-            <a
-              href="https://youtu.be/8WgzypzbQNQ"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#0094D2] underline font-semibold"
+      {/* How it works */}
+      <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="flex items-end justify-between mb-5">
+          <div>
+            <p className="text-xs uppercase tracking-widest text-[#0094D2] font-bold">
+              Como funciona
+            </p>
+            <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900">
+              3 passos para montar seu sistema
+            </h2>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {steps.map((step, idx) => (
+            <div
+              key={step.title}
+              className="group relative bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 animate-in fade-in zoom-in-95"
+              style={{ animationDelay: `${idx * 120}ms`, animationFillMode: 'both' }}
             >
-              Assista ao video
-            </a>{' '}
-            para saber como calcular.
-          </li>
-          <li>
-            Apos realizar as simulacoes de calculo por queda, junte os resultados e some as
-            quantidades apresentadas para cada peca em todas as quedas simuladas.
-          </li>
-          <li>
-            Pronto, agora voce tera a quantidade final para adquirir as pecas necessarias
-            para a montagem de um sistema de calhas simples.
-          </li>
-          <li>
-            Lembre-se, existem projetos de telhado mais complexos, portanto nao deixe de
-            contar com auxilio tecnico para validacao do seu calculo.
-          </li>
-        </ul>
-      </div>
+              <div className="absolute top-0 left-5 right-5 h-1 rounded-b bg-gradient-to-r from-[#0094D2] to-[#00A3E4] opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#0094D2] to-[#00A3E4] text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                <step.icon className="w-6 h-6" />
+              </div>
+              <h3 className="mt-3 font-bold text-slate-900">{step.title}</h3>
+              <p className="text-sm text-slate-600 mt-1">{step.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-      <FormularioCalhas />
-
-      {/* Repetir aviso apos o formulario */}
-      <div className="bg-orange-50 border border-orange-200 rounded-lg p-5">
-        <h3 className="text-lg font-bold text-orange-900 mb-2">
-          ATENCAO | TELHADOS COM MAIS DE UMA QUEDA:
-        </h3>
-        <p className="text-sm text-orange-800">
-          Se seu telhado possui mais de uma queda, repita o calculo para cada queda e some os
-          resultados. Para mais informacoes,{' '}
-          <a
-            href="https://youtu.be/8WgzypzbQNQ"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#0094D2] underline font-semibold"
-          >
-            assista ao video explicativo
-          </a>
-          .
-        </p>
-      </div>
+      <AvisoVideo />
     </div>
   );
 }

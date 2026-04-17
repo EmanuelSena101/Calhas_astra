@@ -2,6 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  ArrowRight,
+  Building2,
+  LoaderCircle,
+  MapPin,
+  Package,
+  Ruler,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,6 +40,70 @@ const UF_NOMES: Record<string, string> = {
 };
 
 type FormErrors = Record<string, string>;
+
+type DimensionFieldProps = {
+  badge: string;
+  label: string;
+  name: string;
+  placeholder: string;
+  error?: string;
+  delay: number;
+};
+
+function DimensionField({ badge, label, name, placeholder, error, delay }: DimensionFieldProps) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div
+      className="space-y-2 animate-in fade-in slide-in-from-bottom-3 duration-500"
+      style={{ animationDelay: `${delay}ms`, animationFillMode: 'both' }}
+    >
+      <div className="flex items-center gap-2.5">
+        <div
+          className={`flex items-center justify-center w-9 h-9 rounded-lg font-mono font-bold text-sm shrink-0 border-2 transition-all duration-200 ${
+            focused
+              ? 'bg-[#0094D2] text-white border-[#0094D2] shadow-md scale-105'
+              : 'bg-white text-[#0094D2] border-[#0094D2]/30'
+          }`}
+        >
+          {badge}
+        </div>
+        <Label htmlFor={name} className="text-sm md:text-base font-semibold text-slate-800">
+          {label}
+        </Label>
+      </div>
+      <div className="relative">
+        <Ruler
+          className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none transition-colors ${
+            focused ? 'text-[#0094D2]' : 'text-slate-400'
+          }`}
+        />
+        <Input
+          id={name}
+          name={name}
+          type="text"
+          inputMode="decimal"
+          placeholder={placeholder}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          aria-describedby={error ? `${name}-error` : undefined}
+          className={`h-11 pl-9 text-base transition-all ${
+            error
+              ? 'border-red-500 focus-visible:ring-red-400'
+              : 'focus-visible:ring-[#0094D2]/50 focus-visible:border-[#0094D2]'
+          }`}
+        />
+      </div>
+      {error && (
+        <p
+          id={`${name}-error`}
+          className="text-sm text-red-500 animate-in fade-in slide-in-from-top-1 duration-200"
+        >
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
 
 export function FormularioCalhas() {
   const router = useRouter();
@@ -85,7 +157,6 @@ export function FormularioCalhas() {
     router.push(`/resultado?${params.toString()}`);
   }
 
-  // Deduplicate UF_ORDER (PE appears twice in original ASP)
   const seenUFs = new Set<string>();
   const uniqueUFs = UF_ORDER.filter((uf) => {
     if (seenUFs.has(uf)) return false;
@@ -94,125 +165,73 @@ export function FormularioCalhas() {
   });
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Dimensoes do telhado */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* A - Largura */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#FF6600] text-white font-bold text-lg shrink-0">
-              A
-            </div>
-            <Label htmlFor="largura" className="text-base font-semibold">
-              Largura do telhado (m)
-            </Label>
-          </div>
-          <Input
-            id="largura"
+    <form onSubmit={handleSubmit} className="space-y-8">
+      <div>
+        <div className="flex items-center gap-2 mb-4 text-[#0094D2]">
+          <Building2 className="w-5 h-5" />
+          <span className="text-xs uppercase tracking-widest font-bold">
+            Dimensoes do telhado
+          </span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <DimensionField
+            badge="A"
+            label="Largura do telhado (m)"
             name="largura"
-            type="text"
-            inputMode="decimal"
             placeholder="Ex: 10"
-            aria-describedby={errors.largura ? 'largura-error' : undefined}
-            className={errors.largura ? 'border-red-500' : ''}
+            error={errors.largura}
+            delay={60}
           />
-          {errors.largura && (
-            <p id="largura-error" className="text-sm text-red-500">
-              {errors.largura}
-            </p>
-          )}
-        </div>
-
-        {/* B - Comprimento */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#FF6600] text-white font-bold text-lg shrink-0">
-              B
-            </div>
-            <Label htmlFor="comprimento" className="text-base font-semibold">
-              Comprimento do beiral (m)
-            </Label>
-          </div>
-          <Input
-            id="comprimento"
+          <DimensionField
+            badge="B"
+            label="Comprimento do beiral (m)"
             name="comprimento"
-            type="text"
-            inputMode="decimal"
             placeholder="Ex: 12"
-            aria-describedby={errors.comprimento ? 'comprimento-error' : undefined}
-            className={errors.comprimento ? 'border-red-500' : ''}
+            error={errors.comprimento}
+            delay={140}
           />
-          {errors.comprimento && (
-            <p id="comprimento-error" className="text-sm text-red-500">
-              {errors.comprimento}
-            </p>
-          )}
-        </div>
-
-        {/* C - Altura do Telhado */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#FF6600] text-white font-bold text-lg shrink-0">
-              C
-            </div>
-            <Label htmlFor="alturaDoTelhado" className="text-base font-semibold">
-              Altura do telhado (m)
-            </Label>
-          </div>
-          <Input
-            id="alturaDoTelhado"
+          <DimensionField
+            badge="C"
+            label="Altura do telhado (m)"
             name="alturaDoTelhado"
-            type="text"
-            inputMode="decimal"
             placeholder="Ex: 3"
-            aria-describedby={errors.alturaDoTelhado ? 'alturaDoTelhado-error' : undefined}
-            className={errors.alturaDoTelhado ? 'border-red-500' : ''}
+            error={errors.alturaDoTelhado}
+            delay={220}
           />
-          {errors.alturaDoTelhado && (
-            <p id="alturaDoTelhado-error" className="text-sm text-red-500">
-              {errors.alturaDoTelhado}
-            </p>
-          )}
-        </div>
-
-        {/* D - Altura do Beiral */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#FF6600] text-white font-bold text-lg shrink-0">
-              D
-            </div>
-            <Label htmlFor="alturaDoBeiral" className="text-base font-semibold">
-              Altura da calha ate o chao (m)
-            </Label>
-          </div>
-          <Input
-            id="alturaDoBeiral"
+          <DimensionField
+            badge="D"
+            label="Altura da calha ate o chao (m)"
             name="alturaDoBeiral"
-            type="text"
-            inputMode="decimal"
             placeholder="Ex: 4"
-            aria-describedby={errors.alturaDoBeiral ? 'alturaDoBeiral-error' : undefined}
-            className={errors.alturaDoBeiral ? 'border-red-500' : ''}
+            error={errors.alturaDoBeiral}
+            delay={300}
           />
-          {errors.alturaDoBeiral && (
-            <p id="alturaDoBeiral-error" className="text-sm text-red-500">
-              {errors.alturaDoBeiral}
-            </p>
-          )}
         </div>
       </div>
 
       {/* Cidade */}
-      <div className="space-y-2">
-        <Label htmlFor="cidade" className="text-base font-semibold">
-          Cidade
-        </Label>
-        <p className="text-sm text-muted-foreground">
-          Para calculo do volume de chuva de sua regiao, escolha a sua cidade ou a mais proxima da sua localidade.
-          Esta informacao sera importante para definicao do numero de pontos de descida de agua com base na volumetria de chuva da regiao.
+      <div
+        className="space-y-2 animate-in fade-in slide-in-from-bottom-3 duration-500"
+        style={{ animationDelay: '380ms', animationFillMode: 'both' }}
+      >
+        <div className="flex items-center gap-2 text-[#0094D2]">
+          <MapPin className="w-5 h-5" />
+          <Label htmlFor="cidade" className="text-base font-semibold text-slate-800">
+            Cidade
+          </Label>
+        </div>
+        <p className="text-sm text-slate-600">
+          Para calculo do volume de chuva da sua regiao, escolha a sua cidade ou a mais
+          proxima da sua localidade. Esta informacao define o numero de pontos de descida
+          de agua com base na volumetria de chuva da regiao.
         </p>
         <Select name="cidade">
-          <SelectTrigger id="cidade" className={errors.cidade ? 'border-red-500' : ''}>
+          <SelectTrigger
+            id="cidade"
+            className={`w-full data-[size=default]:h-11 px-3 text-base transition-colors ${
+              errors.cidade ? 'border-red-500' : 'focus:border-[#0094D2]'
+            }`}
+          >
             <SelectValue placeholder="Selecione a cidade" />
           </SelectTrigger>
           <SelectContent>
@@ -221,7 +240,9 @@ export function FormularioCalhas() {
               if (!cidades || cidades.length === 0) return null;
               return (
                 <SelectGroup key={uf}>
-                  <SelectLabel>{UF_NOMES[uf] || uf} ({uf})</SelectLabel>
+                  <SelectLabel>
+                    {UF_NOMES[uf] || uf} ({uf})
+                  </SelectLabel>
                   {cidades.map((cidade) => (
                     <SelectItem key={cidade.id} value={String(cidade.id)}>
                       {cidade.nome}
@@ -233,17 +254,30 @@ export function FormularioCalhas() {
           </SelectContent>
         </Select>
         {errors.cidade && (
-          <p className="text-sm text-red-500">{errors.cidade}</p>
+          <p className="text-sm text-red-500 animate-in fade-in slide-in-from-top-1 duration-200">
+            {errors.cidade}
+          </p>
         )}
       </div>
 
       {/* Tipo de kit */}
-      <div className="space-y-2">
-        <Label htmlFor="tipo" className="text-base font-semibold">
-          Tipo de kit
-        </Label>
+      <div
+        className="space-y-2 animate-in fade-in slide-in-from-bottom-3 duration-500"
+        style={{ animationDelay: '460ms', animationFillMode: 'both' }}
+      >
+        <div className="flex items-center gap-2 text-[#0094D2]">
+          <Package className="w-5 h-5" />
+          <Label htmlFor="tipo" className="text-base font-semibold text-slate-800">
+            Tipo de kit
+          </Label>
+        </div>
         <Select name="tipo">
-          <SelectTrigger id="tipo" className={errors.tipo ? 'border-red-500' : ''}>
+          <SelectTrigger
+            id="tipo"
+            className={`w-full data-[size=default]:h-11 px-3 text-base transition-colors ${
+              errors.tipo ? 'border-red-500' : 'focus:border-[#0094D2]'
+            }`}
+          >
             <SelectValue placeholder="Selecione o tipo de kit" />
           </SelectTrigger>
           <SelectContent>
@@ -254,18 +288,37 @@ export function FormularioCalhas() {
           </SelectContent>
         </Select>
         {errors.tipo && (
-          <p className="text-sm text-red-500">{errors.tipo}</p>
+          <p className="text-sm text-red-500 animate-in fade-in slide-in-from-top-1 duration-200">
+            {errors.tipo}
+          </p>
         )}
       </div>
 
-      <Button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full md:w-auto bg-[#0094D2] hover:bg-[#007AB8] text-white text-lg px-8 py-3"
-        size="lg"
+      <div
+        className="pt-2 animate-in fade-in duration-500"
+        style={{ animationDelay: '540ms', animationFillMode: 'both' }}
       >
-        {isSubmitting ? 'Calculando...' : 'Calcular'}
-      </Button>
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          size="lg"
+          className="group relative w-full md:w-auto bg-gradient-to-r from-[#0094D2] to-[#00A3E4] hover:from-[#0077AA] hover:to-[#0094D2] text-white text-base md:text-lg px-8 py-6 shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all overflow-hidden"
+        >
+          <span className="relative flex items-center justify-center gap-2">
+            {isSubmitting ? (
+              <>
+                <LoaderCircle className="w-5 h-5 animate-spin" />
+                Calculando...
+              </>
+            ) : (
+              <>
+                Calcular meu kit
+                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+              </>
+            )}
+          </span>
+        </Button>
+      </div>
     </form>
   );
 }

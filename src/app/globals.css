@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-heading: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -126,5 +126,44 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+@layer utilities {
+  @keyframes astra-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes astra-rain {
+    0% { transform: translateY(-10%); opacity: 0; }
+    20% { opacity: 0.7; }
+    100% { transform: translateY(120%); opacity: 0; }
+  }
+  @keyframes astra-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @keyframes astra-pulse-ring {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+  .animate-astra-float {
+    animation: astra-float 4s ease-in-out infinite;
+  }
+  .animate-astra-rain {
+    animation: astra-rain linear infinite;
+  }
+  .animate-astra-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: astra-shimmer 2.5s linear infinite;
+  }
+  .animate-astra-pulse-ring {
+    animation: astra-pulse-ring 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
   }
 }
